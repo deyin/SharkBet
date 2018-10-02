@@ -320,8 +320,8 @@ public class Match {
 
             JsonNode root = parser.getCodec().readTree(parser);
 
-            // id
-            match.setId(root.get("sporttery_matchid").asText());
+            // sportteryId
+            match.setSportteryMatchId(root.get("sporttery_matchid").asText());
 
             // sequence
             String text = root.get("s_num").asText();
