@@ -6,8 +6,10 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
@@ -42,6 +44,10 @@ public class DownloadMatchTask extends AsyncTask<Void, Void, Void> {
         Response.ErrorListener errorListener = new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if(error instanceof TimeoutError) {
+                    VolleyLog.v("Timeout error: %s", error.getMessage());
+                    return;
+                }
                 VolleyLog.e("DownloadMatchTask.onErrorResponse: %s", error.getLocalizedMessage());
             }
         };
@@ -75,32 +81,14 @@ public class DownloadMatchTask extends AsyncTask<Void, Void, Void> {
             }
         };
 
-        stringRequest.setRetryPolicy(getRetryPolicy());
+        stringRequest.setRetryPolicy(NetworkUtils.getRetryPolicy());
 
         VolleySingleton.getInstance(context).addToRequestQueue(stringRequest);
 
         return null;
     }
 
-    @NonNull
-    private static RetryPolicy getRetryPolicy() {
-        return new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 60 * 1000;
-            }
 
-            @Override
-            public int getCurrentRetryCount() {
-                return 3;
-            }
-
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
-                VolleyLog.e("Retry error: %s", error.getMessage());
-            }
-        };
-    }
 
     private class DownloadMatchInfoTask extends AsyncTask<Void, Void, Void> {
 
@@ -158,7 +146,7 @@ public class DownloadMatchTask extends AsyncTask<Void, Void, Void> {
                     return NetworkUtils.fakeHttpHeaders();
                 }
             };
-            stringRequest.setRetryPolicy(getRetryPolicy());
+            stringRequest.setRetryPolicy(NetworkUtils.getRetryPolicy());
             VolleySingleton.getInstance(context).addToRequestQueue(stringRequest);
             return null;
         }

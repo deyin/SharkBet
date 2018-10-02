@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import io.sharkbet.sharkbet.converters.DateConverter;
 import io.sharkbet.sharkbet.converters.JsonObjectConverter;
+import io.sharkbet.sharkbet.utils.StringUtils;
 
 @Entity(tableName = "t_match")
 @JsonDeserialize(using = Match.MatchDeserializer.class)
@@ -328,7 +329,7 @@ public class Match {
             Matcher matcher = PATTERN_NUM.matcher(text);
             if (matcher.find()) {
                 String number = matcher.group(2);
-                match.setSequence(Integer.parseInt(number));
+                match.setSequence(StringUtils.stringToInt(number));
             }
 
             // time
@@ -337,31 +338,31 @@ public class Match {
 
             // league
             League league = new League(root.get("l_id_dc").asText(), root.get("l_cn").asText(),
-                    root.get("l_cn_abbr").asText(), Integer.parseInt(root.get("gameweek").asText()));
+                    root.get("l_cn_abbr").asText(), StringUtils.stringToInt(root.get("gameweek").asText()));
             match.setLeague(league);
 
             // home team
             Team.Standings homeStandings  = new Team.Standings(
-                      Integer.parseInt(root.get("hwin_h").asText())
-                    , Integer.parseInt(root.get("hdraw_h").asText())
-                    , Integer.parseInt(root.get("hlose_h").asText())
-                    , Integer.parseInt(root.get("hpoint_h").asText()));
+                      StringUtils.stringToInt(root.get("hwin_h").asText())
+                    , StringUtils.stringToInt(root.get("hdraw_h").asText())
+                    , StringUtils.stringToInt(root.get("hlose_h").asText())
+                    , StringUtils.stringToInt(root.get("hpoint_h").asText()));
             Team home = new Team(
                     root.get("h_id_dc").asText(), root.get("h_cn").asText(),
                     root.get("h_cn_abbr").asText(),
-                    Integer.parseInt(root.get("table_h").asText()), homeStandings);
+                    StringUtils.stringToInt(root.get("table_h").asText()), homeStandings);
             match.setHome(home);
 
             // away team
             Team.Standings awayStandings  = new Team.Standings(
-                    Integer.parseInt(root.get("awin_a").asText())
-                    , Integer.parseInt(root.get("adraw_a").asText())
-                    , Integer.parseInt(root.get("alose_a").asText())
-                    , Integer.parseInt(root.get("apoint_a").asText()));
+                    StringUtils.stringToInt(root.get("awin_a").asText())
+                    , StringUtils.stringToInt(root.get("adraw_a").asText())
+                    , StringUtils.stringToInt(root.get("alose_a").asText())
+                    , StringUtils.stringToInt(root.get("apoint_a").asText()));
             Team away = new Team(
                     root.get("a_id_dc").asText(), root.get("a_cn").asText(),
                     root.get("a_cn_abbr").asText(),
-                    Integer.parseInt(root.get("table_a").asText()), awayStandings);
+                    StringUtils.stringToInt(root.get("table_a").asText()), awayStandings);
             match.setAway(away);
 
             return match;
